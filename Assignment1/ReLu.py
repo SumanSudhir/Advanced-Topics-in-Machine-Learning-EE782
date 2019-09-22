@@ -10,4 +10,4 @@ class ReLu:
         self.output = input.clamp(0)
         return self.output
 
-    def backward(self, input, grad)
+    # def backward(self, input, grad)

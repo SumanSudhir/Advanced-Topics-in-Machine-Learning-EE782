@@ -9,7 +9,7 @@ class Softmax:
 
     def forward(self, input):
         self.output = torch.exp(
-            input) / torch.sum(torch.exp(input), dim=0)
+            input) / torch.sum(torch.exp(input), dim=0)   # dim = 0 to sum all element of same column
         return self.output
 
-    def backward(self, input):
+    # def backward(self, input):

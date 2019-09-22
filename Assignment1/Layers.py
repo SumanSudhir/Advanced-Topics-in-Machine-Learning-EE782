@@ -11,7 +11,8 @@ class Layers:
         self.out_size = out_size
         self.weight = torch.randn(
             out_size, in_size, dtype=torch.double, device=device)
-        self.bias = torch.randn(out_size, 1, dtype=torch.double, device=device)
+        self.bias = torch.randn(
+            self.out_size, 1, dtype=torch.double, device=device)
         self.output = None
 
     def forward(self, input):
