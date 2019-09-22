@@ -15,8 +15,17 @@ class CrossEntropy:
         loss = torch.sum(log_softmax) / size
         return loss
 
+    def backward(self, input, target):
+        size = target.size()[0]
+        prob = torch.exp(input) / torch.sum(torch.exp(input), dim=0)
+        prob[target, range(size)] -= 1
 
-input = torch.randn(10, 2)
-target = torch.tensor([4, 6], dtype=int)
-loss = CrossEntropy().forward(input, target)
-print(loss)
+        return prob
+
+
+# input = torch.randn(10, 2)
+# target = torch.tensor([4, 6], dtype=int)
+# loss = CrossEntropy().forward(input, target)
+# prob = CrossEntropy().backward(input, target)
+# print(loss)
+# print(prob)
