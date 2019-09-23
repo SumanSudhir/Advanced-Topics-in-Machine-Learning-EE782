@@ -7,8 +7,7 @@ class CrossEntropy:
         self.output = None
 
     def forward(self, input, target):
-        size = target.size()[0]
-        # total_sum = torch.sum(torch.exp(input), dim=0)
+        size = target.shape[0]
         prob = torch.exp(input) / torch.sum(torch.exp(input), dim=0)
         log_softmax = -torch.log(prob[target, range(size)])
         # print(log_softmax)
@@ -23,9 +22,8 @@ class CrossEntropy:
         return prob
 
 
-# input = torch.randn(10, 2)
-# target = torch.tensor([4, 6], dtype=int)
+# input = torch.randn(10, 1)
+# target = torch.tensor([4], dtype=int)
 # loss = CrossEntropy().forward(input, target)
-# prob = CrossEntropy().backward(input, target)
 # print(loss)
 # print(prob)
