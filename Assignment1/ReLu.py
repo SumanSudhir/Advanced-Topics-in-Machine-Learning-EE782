@@ -11,7 +11,7 @@ class ReLu:
         self.output = input.clamp(0)
         return self.output
 
-    def backward(self, input, gradOutput, alpha):
+    def backward(self, input, gradOutput, alpha=None):
         self.gradInput = gradOutput.clone()
         self.gradInput[input < 0] = 0.0
         return self.gradInput

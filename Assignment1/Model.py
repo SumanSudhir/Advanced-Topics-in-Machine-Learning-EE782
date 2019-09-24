@@ -34,7 +34,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # # print(hidden3)
 # print(loss)
 
-print(device)
+# print(device)
 
 
 class Model:
@@ -56,6 +56,8 @@ class Model:
                 self.layers[i - 1].output, gradOutput, alpha)
 
         self.layers[0].backward(input, gradOutput, alpha)
+
+        # print(len(self.layers))
 
     def addLayer(self, class_object):
         self.layers.append(class_object)
