@@ -1,7 +1,8 @@
 import numpy as np
 
-"""Implementation of Restricted Boltzmann Machine(RBM)"""
+
 class RBM():
+    """Implementation of Restricted Boltzmann Machine(RBM)"""
 
     def __init__(self, n_visible, n_hidden):
         #Number of visible nodes
@@ -18,22 +19,34 @@ class RBM():
         temp_out = np.matmul(x, self.weight) + self.h_bias
         prob_h_given_v = sigmoid(temp_out)
 
-        return prob_h_given_v
+        return prob_h_given_v, np.random.binomial(1,prob_h_given_v)
 
     def sample_v_given_h(self, y):
         temp_out = np.matmul(y, self.weight.T) + self.v_bias
         prob_v_given_h = sigmoid(temp_out)
 
-        return prob_v_given_h
+        return prob_v_given_h, np.random.binomial(1,prob_v_given_h)
 
+    def const_divergence(self, visible, K=1):
+        """Implementation of Constructive divergence using gibbs sampling"""
 
-    def training(self, visible_0, visible_k, prob_h0, prob_hk):
-        self.weight += np.matmul(visible_0.T, prob_h0) - np.matmul(visible_k.T, prob_hk)
-        self.v_bias += np.sum((visible_0 - visible_k), 0)
-        self.h_bias += np.sum((prob_h0 - prob_hk), 0)
+        prob_h_given_v, h_sample = sample_h_given_v(self,visible)
+        #positive divergence
+        positive_div = np.matmul(visible.T, prob_h_given_v)
 
+        prob_v_given_hk,_ = sample_v_given_h(self,h_sample)
+        prob_h_given_vk, h_sample_k = sample_h_given_v(self,prob_v_given_hk)
 
+        for i in range(K-1):
+            prob_v_given_hk,_ = sample_v_given_h(self,h_sample_k)
+            prob_h_given_vk, h_sample_k = sample_h_given_v(self,prob_v_given_hk)
 
+        #negative divergence
+        negative_div = np.matmul(prob_v_given_h.T, prob_h_given_vk)
+
+        dweight = positive_div - negative_div
+        dv_bias = visible - prob_v_given_hk
+        dh_bias = prob_h_given_v - prob_h_given_vk
 
 
 
