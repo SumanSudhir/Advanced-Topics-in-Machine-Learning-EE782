@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 
 class RBM():
@@ -10,10 +11,10 @@ class RBM():
         #Number of hidden nodes
         self.n_hidden = n_hidden
         #Weight initilization
-        self.weight = np.random.randn(self.n_visible, self.n_hidden)
+        self.weight = np.random.randn(self.n_visible, self.n_hidden)/np.sqrt(n_visible)
         #Bias initilization
-        self.v_bias = np.random.randn(1, self.n_visible)
-        self.h_bias = np.random.randn(1, self.n_hidden)
+        self.v_bias = np.random.randn(1, self.n_visible)/np.sqrt(n_visible)
+        self.h_bias = np.random.randn(1, self.n_hidden)/np.sqrt(n_visible)
         self.lr = lr
 #         self.cost = 0
 
@@ -38,13 +39,13 @@ class RBM():
         #positive divergence
         positive_div = np.matmul(visible.T, prob_h_given_v)
 
-        prob_v_given_hk,_ = self.sample_v_given_h(h_sample)
-        prob_h_given_vk, h_sample_k = self.sample_h_given_v(prob_v_given_hk)
+        prob_v_given_hk, v_sample_k = self.sample_v_given_h(h_sample)
+        prob_h_given_vk, h_sample_k = self.sample_h_given_v(prob_v_given_hk)   #self.sample_h_given_v(v_sample_k)
 
         for i in range(K-1):
             # print(h_sample_k.shape)
-            prob_v_given_hk,_ = self.sample_v_given_h(h_sample_k)
-            prob_h_given_vk, h_sample_k = self.sample_h_given_v(prob_v_given_hk)
+            prob_v_given_hk, v_sample_k = self.sample_v_given_h(h_sample_k)
+            prob_h_given_vk, h_sample_k = self.sample_h_given_v(prob_v_given_hk)    #self.sample_h_given_v(v_sample_k)
 
 
         #negative divergence
@@ -58,6 +59,7 @@ class RBM():
         self.v_bias += self.lr*dv_bias
         self.h_bias += self.lr*dh_bias
         cost = np.mean(np.abs(visible-prob_v_given_hk))
+        #print(dh_bias)
 
         return cost
 
