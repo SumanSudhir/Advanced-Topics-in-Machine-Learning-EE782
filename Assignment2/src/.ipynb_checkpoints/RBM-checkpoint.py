@@ -32,7 +32,7 @@ class RBM():
     def const_divergence(self, visible, K=1):
         """Implementation of Constructive divergence using gibbs sampling"""
 
-        # batch_size = np.shape(visible)[0]
+        batch_size = np.shape(visible)[0]
         prob_h_given_v, h_sample = self.sample_h_given_v(visible)
 
         #positive divergence
@@ -42,10 +42,10 @@ class RBM():
         prob_h_given_vk, h_sample_k = self.sample_h_given_v(prob_v_given_hk)
 
         for i in range(K-1):
-            # print(h_sample_k.shape)
+            print(h_sample_k.shape)
             prob_v_given_hk,_ = self.sample_v_given_h(h_sample_k)
             prob_h_given_vk, h_sample_k = self.sample_h_given_v(prob_v_given_hk)
-
+    
 
         #negative divergence
         negative_div = np.matmul(prob_v_given_hk.T, prob_h_given_vk)
@@ -54,10 +54,10 @@ class RBM():
         dv_bias = visible - prob_v_given_hk
         dh_bias = prob_h_given_v - prob_h_given_vk
 
-        self.weight += self.lr*dweight
-        self.v_bias += self.lr*dv_bias
-        self.h_bias += self.lr*dh_bias
-        cost = np.mean(np.abs(visible-prob_v_given_hk))
+        self.weight += (self.lr/batch_size)*dweight
+        self.v_bias += (self.lr/batch_size)*dv_bias
+        self.h_bias += (self.lr/batch_size)*dh_bias
+        cost = visible-prob_v_given_hk
 
         return cost
 
