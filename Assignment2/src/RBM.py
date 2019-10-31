@@ -1,11 +1,10 @@
 import numpy as np
 import math
 
-
 class RBM():
     """Implementation of Restricted Boltzmann Machine(RBM)"""
 
-    def __init__(self, n_visible, n_hidden, lr=0.001):
+    def __init__(self, n_visible, n_hidden, lr=0.001, l2_coeff=1e-4, momentum_coff=0.5):
         #Number of visible nodes
         self.n_visible = n_visible
         #Number of hidden nodes
@@ -15,8 +14,14 @@ class RBM():
         #Bias initilization
         self.v_bias = np.random.randn(1, self.n_visible)/np.sqrt(n_visible)
         self.h_bias = np.random.randn(1, self.n_hidden)/np.sqrt(n_visible)
+
+        self.moment_weight = np.zeros((self.n_visible, self.n_hidden))
+        self.moment_v_bias = np.zeros((1, self.n_visible))
+        self.moment_h_bias = np.zeros((1, self.n_hidden))
+
         self.lr = lr
-#         self.cost = 0
+        self.l2_coeff = l2_coeff
+        self.momentum_coff = momentum_coff
 
     def sample_h_given_v(self, x):
         temp_out = np.matmul(x, self.weight) + self.h_bias
@@ -55,9 +60,25 @@ class RBM():
         dv_bias = visible - prob_v_given_hk
         dh_bias = prob_h_given_v - prob_h_given_vk
 
-        self.weight += self.lr*dweight
-        self.v_bias += self.lr*dv_bias
-        self.h_bias += self.lr*dh_bias
+        prev_weight = self.weight
+        #Momentum
+        self.moment_weight *= self.momentum_coff
+        self.moment_weight += dweight
+
+        self.moment_v_bias *= self.momentum_coff
+        self.moment_v_bias += dv_bias
+
+        self.moment_h_bias *= self.momentum_coff
+        self.moment_h_bias += dh_bias
+
+        #Updating Weight and Bias
+        self.weight += self.lr*self.moment_weight
+        self.v_bias += self.lr*self.moment_v_bias
+        self.h_bias += self.lr*self.moment_h_bias
+
+        #L2 weight decay
+        self.weight -= prev_weight*self.l2_coeff
+
         cost = np.mean(np.abs(visible-prob_v_given_hk))
         #print(dh_bias)
 

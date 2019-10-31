@@ -14,16 +14,15 @@ f.close()
 # x = x_train[0].reshape(1,784)
 
 
-"""Training"""
+"""Training of Restricted Boltzmann Machine"""
 
+model = RBM(n_visible=28*28, n_hidden=144, lr=0.1, l2_coeff=1e-4, momentum_coff=0.5)
 
-model = RBM(n_visible=28*28, n_hidden=144,lr=0.1)
-
-training_epochs = 1
+training_epochs = 5
 batch_size = 1
 for epoch in range(training_epochs):
     # index = 0
-    img_num = 10000
+    img_num = 5000
     cost = 0
     for i in range(img_num):
         x = x_train[i].reshape(1,784)
@@ -32,12 +31,12 @@ for epoch in range(training_epochs):
     cost = cost/img_num
     print('Training epoch %d, cost is ' % epoch, cost)
 
-"""Plot Image"""
-visible = x_train[10].reshape(1,784)
+"""Plotting and Testing of Restricted Boltzmann Machine"""
+
+visible = x_train[12].reshape(1,784)
 prob_h_given_v, h_sample = model.sample_h_given_v(visible)
 prob_v_given_hk, v_sample_k = model.sample_v_given_h(h_sample)
 x = v_sample_k.reshape(28,28)
-#print(x)
 
 def img_frombytes(data):
     size = data.shape[::-1]
@@ -45,7 +44,7 @@ def img_frombytes(data):
     return Image.frombytes(mode='1', size=size, data=databytes)
 
 from PIL import Image
-img1 = Image.fromarray(x_train[10])
+img1 = Image.fromarray(x_train[12])
 img1.save("train.png")
 
 img = img_frombytes(x)
