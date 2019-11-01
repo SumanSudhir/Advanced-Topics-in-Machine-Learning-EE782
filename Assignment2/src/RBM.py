@@ -60,7 +60,7 @@ class RBM():
         dv_bias = visible - prob_v_given_hk
         dh_bias = prob_h_given_v - prob_h_given_vk
 
-        prev_weight = self.weight
+        prev_weight = self.weight.copy()
         #Momentum
         self.moment_weight *= self.momentum_coff
         self.moment_weight += dweight
@@ -79,10 +79,10 @@ class RBM():
         #L2 weight decay
         self.weight -= prev_weight*self.l2_coeff
 
-        cost = np.mean(np.abs(visible-prob_v_given_hk))
+        error = np.mean(np.abs(visible-prob_v_given_hk))
         #print(dh_bias)
 
-        return cost
+        return error
 
 
 def sigmoid(input):

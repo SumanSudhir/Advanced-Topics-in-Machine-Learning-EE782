@@ -55,6 +55,11 @@ def train(x_train,y_train,alpha=0.001,epochs=40):
 
         print("Epoch",i," ", "Loss", " ", train_loss/img_num, "Train_Accuracy"," ", count/img_num, "Test_Accuracy", " ", test_count/num_test)
 
+    classifier_weight = open(b"model/classifier_weight.npy","wb")
+    pickle.dump(Linear.weight,classifier_weight)
+
+    classifier_bias = open(b"model/classifier_bias.npy","wb")
+    pickle.dump(Linear.bias,classifier_bias)
 
 #Dataset
 f = gzip.open("../data/mnist.pkl.gz", "rb")

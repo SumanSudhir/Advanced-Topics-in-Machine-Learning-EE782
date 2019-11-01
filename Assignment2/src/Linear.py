@@ -16,9 +16,9 @@ class Linear:
 
         return self.output
 
-    def backward(self,input,gradOutput,alpha=0.001):
+    def backward(self,input,gradOutput,alpha=0.001, weight_decay=1e-4):
         gradB = gradOutput.reshape(self.bias.shape)
         gradW = np.matmul(gradOutput.T, input)
 
         self.bias -= alpha * gradB
-        self.weight -= alpha * gradW
+        self.weight -= alpha * gradW + weight_decay*self.weight
