@@ -33,7 +33,7 @@ model_test.h_bias = pickle.load(rbm_h_bias_file)
 
 
 img_num = 60000
-def train(x_train,y_train,alpha=0.0001,epochs=40):
+def train(x_train,y_train,alpha=0.001,weight_decay=0.0,epochs=40):
     for i in range(epochs):
         train_loss = 0
         count = 0
@@ -48,13 +48,13 @@ def train(x_train,y_train,alpha=0.0001,epochs=40):
             linear = Linear.forward(input)
             loss = cross_entropy(linear, target)
             train_loss += loss
+
             #Backward
-            #print(loss.shape)
             prob = np.exp(linear)/np.sum(np.exp(linear), axis=1)
             prob[0,target] -= 1
-            Linear.backward(input,prob,alpha)
+            Linear.backward(input,prob,alpha,weight_decay)
             #Training Accuracy
-            train_prob = linear
+            train_prob = np.exp(linear)
             if np.argmax(train_prob) == target:
                 count += 1
 
@@ -66,6 +66,7 @@ def train(x_train,y_train,alpha=0.0001,epochs=40):
             test_input,_ = model_test.sample_h_given_v(test_input)
             test_target = y_test[k].copy()
             test_prob = Linear.forward(test_input)
+            test_prob = np.exp(test_prob)
 
             if np.argmax(test_prob) == test_target:
                 test_count += 1

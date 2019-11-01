@@ -16,28 +16,29 @@ def cross_entropy(input,target):
 import pickle
 from struct import unpack
 import gzip
-np.random.seed(2)
+np.random.seed(10)
 Linear = Linear()
 img_num = 60000
-def train(x_train,y_train,alpha=0.001,epochs=40):
+def train(x_train,y_train,alpha=0.001,weight_decay=0.0,epochs=40):
     for i in range(epochs):
         train_loss = 0
         count = 0
         for j in range(img_num):
             input = x_train[j].copy().reshape(1,784)/255.0
             target = y_train[j].copy()
-            #print(target)
+
             #Forward
             linear = Linear.forward(input)
             loss = cross_entropy(linear, target)
             train_loss += loss
+
             #Backward
-            #print(loss.shape)
             prob = np.exp(linear)/np.sum(np.exp(linear), axis=1)
             prob[0,target] -= 1
-            Linear.backward(input,prob,alpha)
+            Linear.backward(input,prob,alpha,weight_decay)
+
             #Training Accuracy
-            train_prob = linear
+            train_prob = np.exp(linear)
             if np.argmax(train_prob) == target:
                 count += 1
 
@@ -48,7 +49,7 @@ def train(x_train,y_train,alpha=0.001,epochs=40):
             test_input = x_test[k].copy().reshape(1,784)/255.0
             test_target = y_test[k].copy()
             test_prob = Linear.forward(test_input)
-
+            test_prob = np.exp(test_prob)
             if np.argmax(test_prob) == test_target:
                 test_count += 1
 
